@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>amori — House Manual</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <style>
+  /* ============================================================
+     THEME VARIABLES
+     ============================================================ */
+  :root {
+    --primary:       #E05A30;
+    --primary-light: #FDEEE8;
+    --primary-dark:  #8B3520;
+    --accent:        #F4845A;
+    --bg:            #FFF1F1;
+    --surface:       #FFFFFF;
+    --text:          #2A1510;
+    --text-muted:    #7A5545;
+    --border:        #FCCDB8;
+    --radius:        14px;
+    --shadow:        0 2px 16px rgba(242,186,5,0.13);
+    --shadow-lg:     0 8px 32px rgba(242,186,5,0.20);
+    --font: 'Noto Sans JP','Noto Sans KR','Noto Sans SC',system-ui,sans-serif;
+  }
+
+  /* ── Reset ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+    overflow-x: hidden;
+  }
+
+  /* ============================================================
+     STICKY HEADER
+     ============================================================ */
+  .site-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 200;
+    padding: 10px 20px;
+    background: transparent;
+    transition: background 0.35s ease, box-shadow 0.35s ease, backdrop-filter 0.35s;
+  }
+  .site-header.scrolled {
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  }
+  .site-header__inner {
+    max-width: 640px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .site-header__logo {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.04em;
+    transition: color 0.35s;
+    white-space: nowrap;
+  }
+  .site-header.scrolled .site-header__logo { color: var(--primary-dark); }
+  .lang-bar {
+    display: flex;
+    gap: 4px;
+    flex-wrap: nowrap;
+  }
+  .lang-btn {
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    white-space: nowrap;
+    font-family: var(--font);
+  }
+  .lang-btn:hover { background: rgba(255,255,255,0.35); }
+  .lang-btn.active { background: #fff; color: var(--primary-dark); border-color: #fff; }
+  .site-header.scrolled .lang-btn {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    border-color: var(--border);
+  }
+  .site-header.scrolled .lang-btn.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+
+  /* ============================================================
+     HERO — FULL SCREEN
+     ============================================================ */
+  .hero {
+    position: relative;
+    height: 100svh;
+    min-height: 420px;
+    overflow: hidden;
+    background: var(--primary-dark);
+    display: flex;
+    align-items: flex-end;
+  }
+  .hero__img {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+  .hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(0,0,0,0.08) 0%,
+      rgba(0,0,0,0.15) 40%,
+      rgba(0,0,0,0.65) 100%
+    );
+  }
+  .hero__placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #5C4535 0%, #8B6F4E 60%, #C4A882 100%);
+    color: rgba(255,255,255,0.7);
+    gap: 10px;
+    font-size: 13px;
+  }
+  .hero__placeholder-icon { font-size: 44px; }
+  .hero__content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    padding: 0 24px 52px;
+    color: #fff;
+  }
+  .hero__tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.8;
+    margin-bottom: 8px;
+  }
+  .hero__title {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    line-height: 1.2;
+  }
+  .hero__sub {
+    font-size: 14px;
+    opacity: 0.82;
+    margin-top: 6px;
+    letter-spacing: 0.05em;
+  }
+  .hero__chips {
+    display: flex;
+    gap: 8px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  .hero__chip {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.35);
+    backdrop-filter: blur(8px);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .hero__chip:hover { background: rgba(255,255,255,0.28); }
+  .hero__scroll {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,255,255,0.6);
+    font-size: 22px;
+    animation: bounce 2.2s infinite;
+    z-index: 2;
+    line-height: 1;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50%       { transform: translateX(-50%) translateY(7px); }
+  }
+
+  /* ============================================================
+     MAIN CONTENT
+     ============================================================ */
+  .main {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 28px 16px 100px;
+  }
+
+  /* ============================================================
+     SECTION CARDS
+     ============================================================ */
+  .section {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.55s ease, transform 0.55s ease, box-shadow 0.2s;
+  }
+  .section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .section:hover { box-shadow: var(--shadow-lg); }
+
+  .section__header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    background: var(--primary-light);
+    border-bottom: 1px solid rgba(139,111,78,0.12);
+  }
+  .section__icon {
+    width: 42px;
+    height: 42px;
+    background: var(--primary);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .section__title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary-dark);
+  }
+  .section__body {
+    padding: 20px;
+  }
+
+  /* ============================================================
+     CONTENT COMPONENTS
+     ============================================================ */
+
+  /* Wi-Fi */
+  .wifi-box {
+    background: var(--primary-light);
+    border: 2px dashed var(--primary);
+    border-radius: 12px;
+    padding: 16px 18px;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .wifi-box__label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+  .wifi-box__value { font-size: 22px; font-weight: 700; color: var(--primary-dark); letter-spacing: 0.08em; }
+  .wifi-box__row   { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  .wifi-box__copy  {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: var(--font);
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .wifi-box__copy:hover  { background: var(--primary-dark); }
+  .wifi-box__copy:active { transform: scale(0.95); }
+  .wifi-box__copy.copied { background: #16a34a; }
+
+  /* Steps (numbered list) */
+  .steps { list-style: none; counter-reset: step; }
+  .steps li {
+    counter-increment: step;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .steps li:last-child { border-bottom: none; }
+  .steps li::before {
+    content: counter(step);
+    background: var(--primary);
+    color: #fff;
+    min-width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* Rules (icon list) */
+  .rules { list-style: none; }
+  .rules li {
+    display: flex;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .rules li:last-child { border-bottom: none; }
+  .rules li .bullet { font-size: 18px; flex-shrink: 0; line-height: 1.4; }
+
+  /* Notices */
+  .notice {
+    border-left: 4px solid var(--accent);
+    background: #FFF8EC;
+    padding: 12px 14px;
+    border-radius: 0 10px 10px 0;
+    font-size: 13px;
+    margin-top: 12px;
+    line-height: 1.7;
+  }
+  .notice--warning { border-left-color: #DC2626; background: #FEF2F2; }
+  .notice--blue    { border-left-color: var(--primary); background: var(--primary-light); }
+
+  /* Info grid (check-in/out) */
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .info-card {
+    background: var(--primary-light);
+    border-radius: 12px;
+    padding: 14px 10px;
+    text-align: center;
+  }
+  .info-card__icon  { font-size: 24px; margin-bottom: 6px; }
+  .info-card__label { font-size: 12px; color: var(--text-muted); }
+  .info-card__value { font-size: 16px; font-weight: 700; color: var(--primary-dark); margin-top: 2px; }
+
+  /* Contact cards */
+  .contact-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    transition: box-shadow 0.2s;
+  }
+  .contact-card:hover { box-shadow: var(--shadow); }
+  .contact-card__icon { font-size: 28px; flex-shrink: 0; }
+  .contact-card__name { font-weight: 700; font-size: 14px; }
+  .contact-card__tel  {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary);
+    text-decoration: none;
+    display: block;
+    line-height: 1.3;
+  }
+  .contact-card__note { font-size: 12px; color: var(--text-muted); }
+
+  /* Spot cards */
+  .spot-card {
+    display: flex;
+    gap: 14px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+  .spot-card:last-child { border-bottom: none; }
+  .spot-card__icon { font-size: 26px; flex-shrink: 0; line-height: 1.2; }
+  .spot-card__name { font-weight: 700; font-size: 14px; }
+  .spot-card__desc { font-size: 13px; color: var(--text-muted); }
+  .spot-card__dist { font-size: 12px; color: var(--primary); font-weight: 600; margin-top: 3px; }
+
+  /* FAQ */
+  .faq-item { border-bottom: 1px solid var(--border); }
+  .faq-item:last-child { border-bottom: none; }
+  .faq-q {
+    font-weight: 700;
+    font-size: 14px;
+    padding: 13px 0 5px;
+    color: var(--primary-dark);
+  }
+  .faq-q::before { content: "Q. "; color: var(--accent); }
+  .faq-a {
+    font-size: 13px;
+    color: var(--text-muted);
+    padding-bottom: 13px;
+    line-height: 1.8;
+  }
+  .faq-a::before { content: "A. "; font-weight: 700; color: var(--primary); }
+
+  /* Form link button */
+  .form-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: var(--primary);
+    color: #fff !important;
+    text-decoration: none;
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 14px;
+    margin-top: 12px;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .form-link:hover  { background: var(--primary-dark); }
+  .form-link:active { transform: scale(0.98); }
+
+  /* Welcome Card */
+  .welcome-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px 24px;
+    margin-bottom: 20px;
+    text-align: center;
+    border-top: 4px solid var(--primary);
+  }
+  .welcome-card__icon { font-size: 36px; margin-bottom: 10px; }
+  .welcome-card__msg {
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--text);
+  }
+  .welcome-card__host {
+    margin-top: 14px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    letter-spacing: 0.04em;
+  }
+
+  /* Hero Welcome overlay */
+  .hero__welcome {
+    font-size: 13px;
+    opacity: 0.9;
+    margin-top: 14px;
+    line-height: 1.85;
+    font-style: italic;
+    color: #fff;
+    max-width: 460px;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+  }
+
+  /* Spot card link */
+  a.spot-card { text-decoration: none; color: inherit; display: flex; }
+  a.spot-card:hover { background: var(--primary-light); border-radius: 8px; }
+
+  /* Inline helpers */
+  p { margin-bottom: 8px; font-size: 14px; }
+  strong { color: var(--primary-dark); }
+
+  /* ============================================================
+     FLOATING TOC BUTTON (FAB)
+     ============================================================ */
+  .toc-fab {
+    position: fixed;
+    bottom: 24px;
+    right: 20px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    font-size: 22px;
+    box-shadow: 0 4px 20px rgba(139,111,78,0.45);
+    cursor: pointer;
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+  .toc-fab:hover { background: var(--primary-dark); transform: scale(1.06); }
+  .toc-fab.open  { background: var(--primary-dark); transform: rotate(90deg); }
+
+  /* TOC Overlay */
+  .toc-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 400;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .toc-overlay.show { opacity: 1; pointer-events: auto; }
+
+  /* TOC Bottom Sheet */
+  .toc-sheet {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-radius: 22px 22px 0 0;
+    z-index: 500;
+    transform: translateY(100%);
+    transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
+    max-height: 80svh;
+    overflow-y: auto;
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+  }
+  .toc-sheet.open { transform: translateY(0); }
+
+  .toc-sheet__bar {
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    padding: 10px 20px 12px;
+    border-bottom: 1px solid var(--border);
+    z-index: 1;
+  }
+  .toc-sheet__handle {
+    width: 38px;
+    height: 4px;
+    background: #CBD5E1;
+    border-radius: 2px;
+    margin: 0 auto 12px;
+  }
+  .toc-sheet__title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-align: center;
+  }
+  .toc-sheet__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 16px 16px 20px;
+  }
+  .toc__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--primary-dark);
+    text-decoration: none;
+    padding: 10px 12px;
+    background: var(--primary-light);
+    border-radius: 10px;
+    border: 1px solid rgba(139,111,78,0.15);
+    transition: background 0.15s, transform 0.1s;
+    font-weight: 500;
+  }
+  .toc__item:hover  { background: #EAD9C8; }
+  .toc__item:active { transform: scale(0.97); }
+  .toc__item .icon  { font-size: 16px; flex-shrink: 0; }
+
+  /* ============================================================
+     FOOTER
+     ============================================================ */
+  .footer {
+    text-align: center;
+    padding: 24px 20px 40px;
+    font-size: 12px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+  }
+  </style>
+</head>
+<body>
+
+<!-- ── Sticky Header ── -->
+<header class="site-header" id="site-header">
+  <div class="site-header__inner">
+    <div class="site-header__logo">amori</div>
+    <div class="lang-bar">
+      <button class="lang-btn active" onclick="setLang('en')">English</button>
+      <button class="lang-btn" onclick="setLang('ko')">한국어</button>
+      <button class="lang-btn" onclick="setLang('zh')">中文</button>
+      <button class="lang-btn" onclick="setLang('ja')">日本語</button>
+    </div>
+  </div>
+</header>
+
+<!-- ── Hero ── -->
+<section class="hero" id="hero-area"></section>
+
+<!-- ── Main ── -->
+<main class="main" id="main-content"></main>
+
+<footer class="footer">© amori — All rights reserved</footer>
+
+<!-- ── Floating TOC Button ── -->
+<button class="toc-fab" id="toc-fab" aria-label="目次">☰</button>
+
+<!-- ── TOC Backdrop ── -->
+<div class="toc-overlay" id="toc-overlay"></div>
+
+<!-- ── TOC Bottom Sheet ── -->
+<nav class="toc-sheet" id="toc-sheet">
+  <div class="toc-sheet__bar">
+    <div class="toc-sheet__handle"></div>
+    <div class="toc-sheet__title" data-i18n="toc_title">目次</div>
+  </div>
+  <div class="toc-sheet__grid" id="toc-grid"></div>
+</nav>
+
+
+<!-- ============================================================
+     ▼▼▼ DATA LAYER ▼▼▼
+     ============================================================ -->
+<script>
+
+// ── 物件設定 ─────────────────────────────────────────────────
+const PROPERTY = {
+  name:           "amori",
+  wifi_ssid:      "NSD1K-03C0-a",
+  wifi_pass:      "7arfaXuys3539",
+  checkin_time:   "16:00",
+  checkout_time:  "10:00",
+  host_name:      "Misato",
+  host_tel:       "+81 70-2377-1553",
+  host_email:     "info@casamori.jp",
+  address:        "〒544-0031 大阪府大阪市生野区鶴橋２丁目１５−２２",
+  id_form_url:    "https://forms.gle/AM9Byz6eyf2nXGqv9",
+};
+
+// ── 物件写真 ────────────────────────────────────────────────
+const PROPERTY_IMAGES = [
+  "images/living.jpg",
+];
+
+
+// ── i18n ─────────────────────────────────────────────────────
+const I18N = {
+  ja: {
+    header_sub: "ハウスマニュアル", toc_title: "目次",
+    welcome_msg: "大阪へようこそ。あなたの旅が素敵な旅になりますように、心から願っております。<br>何か質問があれば、いつでもご連絡ください。<br><br>Misato",
+    s_wifi: "Wi-Fi", s_checkin: "チェックイン・チェックアウト",
+    s_garbage: "ゴミ捨て", s_facilities: "設備の使い方",
+    s_smoking: "タバコについて",
+    s_shoes: "土足禁止", s_id: "身分証明書",
+    s_tax: "宿泊税", s_emergency: "緊急連絡先",
+    s_spots: "近隣スポット", s_faq: "よくある質問",
+    copy: "コピー", copied: "✓ コピー済",
+  },
+  en: {
+    header_sub: "House Manual", toc_title: "Contents",
+    welcome_msg: "Welcome to Osaka. We sincerely hope your trip will be a wonderful journey.<br>Please feel free to contact us anytime if you have any questions.<br><br>Misato",
+    s_wifi: "Wi-Fi", s_checkin: "Check-in / Check-out",
+    s_garbage: "Garbage & Recycling", s_facilities: "Facilities Guide",
+    s_smoking: "Smoking Policy",
+    s_shoes: "No Shoes Indoors", s_id: "ID Verification",
+    s_tax: "Accommodation Tax", s_emergency: "Emergency Contacts",
+    s_spots: "Nearby Spots", s_faq: "FAQ",
+    copy: "Copy", copied: "✓ Copied",
+  },
+  ko: {
+    header_sub: "하우스 매뉴얼", toc_title: "목차",
+    welcome_msg: "오사카에 오신 것을 환영합니다. 여러분의 여행이 멋지고 소중한 여행이 되기를 진심으로 바랍니다.<br>궁금한 점이 있으시면 언제든지 연락해 주세요.<br><br>Misato",
+    s_wifi: "Wi-Fi", s_checkin: "체크인 / 체크아웃",
+    s_garbage: "쓰레기 버리기", s_facilities: "시설 이용 안내",
+    s_smoking: "흡연 안내",
+    s_shoes: "실내 신발 금지", s_id: "신분증 확인",
+    s_tax: "숙박세", s_emergency: "긴급 연락처",
+    s_spots: "주변 추천 장소", s_faq: "자주 묻는 질문",
+    copy: "복사", copied: "✓ 복사됨",
+  },
+  zh: {
+    header_sub: "住宿手册", toc_title: "目录",
+    welcome_msg: "欢迎来到大阪。衷心希望您的旅途愉快美好。<br>如有任何问题，请随时联系我们。<br><br>Misato",
+    s_wifi: "Wi-Fi", s_checkin: "入住 / 退房",
+    s_garbage: "垃圾分类", s_facilities: "设施使用说明",
+    s_smoking: "吸烟规定",
+    s_shoes: "禁止穿鞋入内", s_id: "身份证明",
+    s_tax: "住宿税", s_emergency: "紧急联系方式",
+    s_spots: "周边推荐景点", s_faq: "常见问题",
+    copy: "复制", copied: "✓ 已复制",
+  },
+};
+
+// ── セクション内容 ────────────────────────────────────────────
+const SECTIONS = [
+
+  // 1. Wi-Fi
+  {
+    id: "wifi", icon: "📶", title_key: "s_wifi",
+    render: (lang) => {
+      const t = {
+        ja: { ssid: "ネットワーク名", pass: "パスワード", note: "接続できない場合はホストへご連絡ください。" },
+        en: { ssid: "Network Name", pass: "Password", note: "Contact the host if you have trouble connecting." },
+        ko: { ssid: "네트워크 이름", pass: "비밀번호", note: "연결이 안 되면 호스트에게 연락해 주세요." },
+        zh: { ssid: "网络名称", pass: "密码", note: "如无法连接，请联系房东。" },
+      }[lang];
+      return `
+        <div class="wifi-box">
+          <div class="wifi-box__label">📡 ${t.ssid}</div>
+          <div class="wifi-box__value" style="font-size:16px;letter-spacing:0.04em">${PROPERTY.wifi_ssid}</div>
+        </div>
+        <div class="wifi-box">
+          <div class="wifi-box__label">🔑 ${t.pass}</div>
+          <div class="wifi-box__row">
+            <div class="wifi-box__value">${PROPERTY.wifi_pass}</div>
+            <button class="wifi-box__copy" data-copy="${PROPERTY.wifi_pass}">${I18N[lang].copy}</button>
+          </div>
+        </div>
+        <div class="notice notice--blue">ℹ️ ${t.note}</div>
+      `;
+    },
+  },
+
+  // 2. チェックイン・チェックアウト
+  {
+    id: "checkin", icon: "🔑", title_key: "s_checkin",
+    render: (lang) => {
+      const t = {
+        ja: {
+          in_title: "チェックイン", out_title: "チェックアウト",
+          in_steps: [
+            `チェックイン時間は <strong>${PROPERTY.checkin_time}〜</strong> です`,
+            "玄関のキーボックスの番号は、<strong>チェックイン前日の日本時間夜8時</strong>にメッセージでお送りします",
+            "番号を入力して鍵を取り出し、ドアを開けてください",
+            "滞在中は鍵をそのままお持ちいただいて大丈夫です",
+            "鍵を<strong>紛失した場合は罰金20,000円</strong>が発生します",
+          ],
+          out_steps: [
+            `チェックアウト時間は <strong>${PROPERTY.checkout_time}まで</strong> です`,
+            "エアコン・照明・テレビなどすべて電源をお切りください",
+            "鍵をキーボックスに戻し、施錠してください",
+          ],
+        },
+        en: {
+          in_title: "Check-in", out_title: "Check-out",
+          in_steps: [
+            `Check-in time is from <strong>${PROPERTY.checkin_time}</strong>`,
+            "The key box code will be sent via message on the <strong>day before check-in at 8:00 PM Japan time</strong>",
+            "Enter the code, take the key, and open the door",
+            "You are welcome to keep the key with you throughout your stay",
+            "<strong>A ¥20,000 penalty applies if the key is lost</strong>",
+          ],
+          out_steps: [
+            `Check-out is by <strong>${PROPERTY.checkout_time}</strong>`,
+            "Please turn off the A/C, lights, TV, and all appliances",
+            "Return the key to the key box and lock it",
+          ],
+        },
+        ko: {
+          in_title: "체크인", out_title: "체크아웃",
+          in_steps: [
+            `체크인 시간은 <strong>${PROPERTY.checkin_time} 이후</strong>입니다`,
+            "키박스 번호는 <strong>체크인 전날 일본 시간 밤 8시</strong>에 메시지로 보내드립니다",
+            "번호를 입력하고 열쇠를 꺼내 문을 열어주세요",
+            "체류 중에는 열쇠를 지참하셔도 됩니다",
+            "<strong>열쇠를 분실한 경우 20,000엔의 벌금</strong>이 부과됩니다",
+          ],
+          out_steps: [
+            `체크아웃은 <strong>${PROPERTY.checkout_time}까지</strong>입니다`,
+            "에어컨, 조명, TV 등 모든 전원을 꺼주세요",
+            "열쇠를 키박스에 반납하고 잠가주세요",
+          ],
+        },
+        zh: {
+          in_title: "入住", out_title: "退房",
+          in_steps: [
+            `入住时间为 <strong>${PROPERTY.checkin_time} 以后</strong>`,
+            "密码箱的密码将在<strong>入住前一天日本时间晚上8点</strong>通过消息发送给您",
+            "输入密码取出钥匙，开门入住",
+            "入住期间可以随身携带钥匙",
+            "<strong>钥匙丢失将收取20,000日元罚款</strong>",
+          ],
+          out_steps: [
+            `退房时间为 <strong>${PROPERTY.checkout_time} 之前</strong>`,
+            "请关闭空调、灯光、电视等所有电器",
+            "将钥匙放回密码箱并锁好",
+          ],
+        },
+      }[lang];
+      return `
+        <div class="info-grid" style="margin-bottom:16px">
+          <div class="info-card">
+            <div class="info-card__icon">🟢</div>
+            <div class="info-card__label">${t.in_title}</div>
+            <div class="info-card__value">${PROPERTY.checkin_time}〜</div>
+          </div>
+          <div class="info-card">
+            <div class="info-card__icon">🔴</div>
+            <div class="info-card__label">${t.out_title}</div>
+            <div class="info-card__value">〜${PROPERTY.checkout_time}</div>
+          </div>
+        </div>
+        <p><strong>✅ ${t.in_title}</strong></p>
+        <ol class="steps">${t.in_steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+        <p style="margin-top:14px"><strong>✅ ${t.out_title}</strong></p>
+        <ol class="steps">${t.out_steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+      `;
+    },
+  },
+
+  // 3. 身分証明書
+  {
+    id: "id", icon: "🪪", title_key: "s_id",
+    render: (lang) => {
+      const t = {
+        ja: { main: "日本の法律により、チェックイン時に全宿泊者の身分証明書の確認が必要です。", sub: "国籍を問わず、下記フォームからご登録をお願いします。", btn: "📋 身分証登録フォームへ", note: "ご提供いただいた個人情報は、宿泊管理の目的のみに使用し、法令に基づき適切に管理いたします。" },
+        en: { main: "Under Japanese law, ID verification is required for all guests at check-in.", sub: "Regardless of nationality, please register via the form below.", btn: "📋 ID Registration Form", note: "Your personal information will only be used for accommodation management and handled in accordance with applicable laws." },
+        ko: { main: "일본 법률에 따라 체크인 시 모든 투숙객의 신분증 확인이 필요합니다.", sub: "국적에 관계없이 아래 양식에서 등록해 주세요.", btn: "📋 신분증 등록 양식으로", note: "제공된 개인정보는 숙박 관리 목적으로만 사용되며, 법령에 따라 적절히 관리됩니다." },
+        zh: { main: "根据日本法律，入住时需要确认所有住客的身份证明。", sub: "无论何种国籍，请通过以下表格进行登记。", btn: "📋 身份证登记表格", note: "您提供的个人信息仅用于住宿管理目的，并依法妥善管理。" },
+      }[lang];
+      return `
+        <p>${t.main}</p><p>${t.sub}</p>
+        <a class="form-link" href="${PROPERTY.id_form_url}" target="_blank" rel="noopener">${t.btn} ↗</a>
+        <div class="notice notice--blue" style="margin-top:12px">🔒 ${t.note}</div>
+      `;
+    },
+  },
+
+  // 4. ゴミ捨て
+  {
+    id: "garbage", icon: "♻️", title_key: "s_garbage",
+    render: (lang) => {
+      const t = {
+        ja: {
+          rules: [
+            { icon: "", text: "<strong>ペットボトル・ビン・缶</strong>は一緒にまとめてください" },
+            { icon: "", text: "それ以外のゴミは<strong>まとめて一つの袋</strong>に入れてください" },
+            { icon: "", text: "必ずゴミは<strong>袋の中</strong>に入れてください" },
+            { icon: "", text: "回収日は<strong>週3回（月・水・金）の早朝</strong>に回収に来ます" },
+            { icon: "", text: "新しいゴミ袋はゴミ箱の横に置いています" },
+          ],
+        },
+        en: {
+          rules: [
+            { icon: "", text: "<strong>PET bottles, glass bottles & cans</strong> go together in one bag" },
+            { icon: "", text: "All other waste goes in <strong>one separate bag</strong>" },
+            { icon: "", text: "Always put garbage <strong>inside a bag</strong>" },
+            { icon: "", text: "Collection: <strong>3 times a week — Mon / Wed / Fri, early morning</strong>" },
+            { icon: "", text: "Spare garbage bags are next to the bin" },
+          ],
+        },
+        ko: {
+          rules: [
+            { icon: "", text: "<strong>페트병·유리병·캔</strong>은 함께 모아주세요" },
+            { icon: "", text: "그 외 쓰레기는 <strong>하나의 봉투</strong>에 넣어주세요" },
+            { icon: "", text: "반드시 쓰레기는 <strong>봉투 안에</strong> 넣어주세요" },
+            { icon: "", text: "수거: <strong>주 3회（월·수·금）이른 아침</strong>에 수거합니다" },
+            { icon: "", text: "새 쓰레기봉투는 쓰레기통 옆에 있습니다" },
+          ],
+        },
+        zh: {
+          rules: [
+            { icon: "", text: "<strong>PET瓶·玻璃瓶·铁罐</strong>请放在一起" },
+            { icon: "", text: "其他垃圾请<strong>统一装入一个袋子</strong>" },
+            { icon: "", text: "垃圾必须<strong>装入袋中</strong>" },
+            { icon: "", text: "收集：<strong>每周3次（周一·周三·周五）清晨</strong>来收" },
+            { icon: "", text: "备用垃圾袋在垃圾桶旁边" },
+          ],
+        },
+      }[lang];
+      return `
+        <ul class="rules">${t.rules.map(r=>`<li><span class="bullet">${r.icon}</span><span>${r.text}</span></li>`).join('')}</ul>
+        <div style="text-align:center;margin-top:14px"><img src="images/garbage-bin.jpg" alt="garbage bin" loading="lazy" style="width:60%;border-radius:10px;display:inline-block;" onerror="this.style.display='none'"></div>
+      `;
+    },
+  },
+
+  // 5. 設備の使い方
+  {
+    id: "facilities", icon: "🏠", title_key: "s_facilities",
+    render: (lang) => {
+      const t = {
+        ja: {
+          ac_title:    "エアコン",
+          ac_body:     "リモコンは壁に掛けてあります。冷房・暖房・除湿が使用できます。就寝時は「自動」モードを推奨します。",
+          wash_title:  "洗濯機・乾燥機",
+          wash_body:   "洗濯機は<strong>1階</strong>にあります。<strong>洗剤は自動投入</strong>ですので、洗剤の追加投入は不要です。<strong>乾燥機もご自由にお使いください。</strong>",
+          bath_title:  "シャワー・お風呂",
+          bath_body:   "<strong>2階・3階それぞれにシャワールームがあります。</strong>シャンプー・コンディショナー・ボディウォッシュをご用意しています。",
+          boiler_title: "給湯器について",
+          boiler_body:  "給湯器は<strong>2階のお風呂の中</strong>にあります。給湯器の電源が入っていないと、2階・3階のお湯の温度が低くなります。<br><strong>必ず電源をONにしてからご使用ください。</strong><br><br><img src='images/water-heater.jpg' alt='給湯器' loading='lazy' style='width:100%;border-radius:10px;display:block;' onerror='this.style.display=\"none\"'>",
+          window_title: "窓の閉め方",
+          window_body:  "窓を全開にした場合、<strong>ロックがかかります。</strong><br>ロックを解除するには、<strong>下のバーを押しながら窓を閉めて</strong>ください。<br><br><img src='images/window.jpg' alt='窓の閉め方' loading='lazy' style='width:100%;border-radius:10px;display:block;' onerror='this.style.display=\"none\"'>",
+        },
+        en: {
+          ac_title:    "Air Conditioner",
+          ac_body:     "The remote control is on the wall. Cooling, heating & dehumidify available. 'Auto' mode recommended for sleeping.<div style='text-align:center;margin-top:12px'><img src='images/ac-remote-en.png' alt='AC Remote' loading='lazy' style='width:32%;border-radius:10px;display:inline-block;' onerror='this.style.display=\"none\"'></div>",
+          wash_title:  "Washing Machine & Dryer",
+          wash_body:   "The washing machine is on the <strong>1st floor</strong>. It features <strong>automatic detergent dispensing</strong> — no need to add detergent. <strong>A dryer is also available for your use.</strong>",
+          bath_title:  "Shower / Bath",
+          bath_body:   "<strong>There is a shower room on both the 2nd and 3rd floors.</strong> Shampoo, conditioner, and body wash are provided.",
+          boiler_title: "Water Heater",
+          boiler_body:  "The water heater is located <strong>inside the bathroom on the 2nd floor</strong>. If the power is not on, the water temperature on the 2nd and 3rd floors will be low.<br><strong>Always make sure the power is turned ON before use.</strong><br><br><img src='images/water-heater.jpg' alt='Water Heater' loading='lazy' style='width:100%;border-radius:10px;display:block;' onerror='this.style.display=\"none\"'>",
+          window_title: "How to Close the Window",
+          window_body:  "When the window is <strong>fully open, it locks in place.</strong><br>To unlock it, <strong>press the bar at the bottom while closing the window.</strong><br><br><img src='images/window.jpg' alt='Window closing' loading='lazy' style='width:100%;border-radius:10px;display:block;' onerror='this.style.display=\"none\"'>",
+        },
+        ko: {
+          ac_title:    "에어컨",
+          ac_body:     "리모컨은 벽에 걸려 있습니다. 냉방·난방·제습 사용 가능. 수면 중에는 '자동' 모드를 권장합니다.<div style='text-align:center;margin-top:12px'><img src='images/ac-remote-ko.png' alt='에어컨 리모컨' loading='lazy' style='width:32%;border-radius:10px;display:inline-block;' onerror='this.style.display=\"none\"'></div>",
+          wash_title:  "세탁기・건조기",
+          wash_body:   "세탁기는 <strong>1층</strong>에 있습니다. <strong>세제는 자동 투입</strong>되므로 별도로 넣을 필요가 없습니다. <strong>건조기도 자유롭게 이용하세요.</strong>",
+          bath_title:  "샤워・욕조",
+          bath_body:   "<strong>2층·3층 각각에 샤워룸이 있습니다.</strong> 샴푸·컨디셔너·바디워시가 준비되어 있습니다.",
+          boiler_title: "온수기 안내",
+          boiler_body:  "온수기는 <strong>2층 욕실 안</strong>에 있습니다. 전원이 켜져 있지 않으면 2·3층의 온수 온도가 낮아집니다.<br><strong>반드시 전원을 켜고 사용해 주세요.</strong><br><br><img src='images/water-heater.jpg' alt='온수기' loading='lazy' style='width:100%;border-radius:10px;display:block;' onerror='this.style.display=\"none\"'>",
+          window_title: "창문 닫는 방법",
+          window_body:  "창문을 완전히 열면 <strong>잠금이 걸립니다.</strong><br>잠금을 해제하려면 <strong>아래 바를 누르면서 창문을 닫아</strong>주세요.<br><br><img src='images/window.jpg' alt='창문 닫는 방법' loading='lazy' style='width:100%;border-radius:10px;display:block;' onerror='this.style.display=\"none\"'>",
+        },
+        zh: {
+          ac_title:    "空调",
+          ac_body:     "遥控器挂在墙上。可使用制冷、制热和除湿。睡眠时建议使用「自动」模式。<div style='text-align:center;margin-top:12px'><img src='images/ac-remote-zh.png' alt='空调遥控器' loading='lazy' style='width:32%;border-radius:10px;display:inline-block;' onerror='this.style.display=\"none\"'></div>",
+          wash_title:  "洗衣机・烘干机",
+          wash_body:   "洗衣机在<strong>1楼</strong>。<strong>洗涤剂为自动投放</strong>，无需另行添加。<strong>烘干机也可自由使用。</strong>",
+          bath_title:  "淋浴・浴缸",
+          bath_body:   "<strong>2楼和3楼各设有一个淋浴间。</strong>已备有洗发水、护发素和沐浴露。",
+          boiler_title: "热水器说明",
+          boiler_body:  "热水器位于<strong>2楼浴室内</strong>。若电源未开启，2楼和3楼的热水温度会偏低。<br><strong>使用前请务必确认电源已开启。</strong><br><br><img src='images/water-heater.jpg' alt='热水器' loading='lazy' style='width:100%;border-radius:10px;display:block;' onerror='this.style.display=\"none\"'>",
+          window_title: "关窗方法",
+          window_body:  "当窗户完全打开时，<strong>会自动锁定。</strong><br>要解锁，请<strong>按住下方的横杆同时关闭窗户。</strong><br><br><img src='images/window.jpg' alt='关窗方法' loading='lazy' style='width:100%;border-radius:10px;display:block;' onerror='this.style.display=\"none\"'>",
+        },
+      }[lang];
+      const items = [
+        { icon: "❄️", title: t.ac_title, body: t.ac_body },
+        { icon: "👕", title: t.wash_title, body: t.wash_body },
+        { icon: "🚿", title: t.bath_title, body: t.bath_body },
+        { icon: "🔥", title: t.boiler_title, body: t.boiler_body },
+        { icon: "🪟", title: t.window_title, body: t.window_body },
+      ];
+      return items.map(item => `
+        <div style="padding:14px 0;border-bottom:1px solid var(--border)">
+          <div style="display:flex;align-items:center;gap:9px;margin-bottom:7px">
+            <span style="font-size:24px">${item.icon}</span>
+            <span style="font-weight:700;font-size:15px;color:var(--primary-dark)">${item.title}</span>
+          </div>
+          <div style="font-size:13px;color:var(--text-muted);line-height:1.8">${item.body}</div>
+        </div>
+      `).join('') + '<div style="height:4px"></div>';
+    },
+  },
+
+  // 6. 近隣スポット
+  {
+    id: "spots", icon: "📍", title_key: "s_spots",
+    render: (lang) => {
+      const t = {
+        ja: { spots:[
+          { icon:"🚉", name:"鶴橋駅", desc:"JR大阪環状線 / 近鉄大阪線・奈良線・山田線", dist:"徒歩約5分", url:"https://www.google.com/maps/search/鶴橋駅+大阪" },
+          { icon:"🇰🇷", name:"鶴橋コリアタウン", desc:"韓国食材・コスメ・グルメが揃う大阪最大のコリアタウン", dist:"徒歩約5分", url:"https://www.google.com/maps/search/鶴橋コリアタウン+大阪" },
+          { icon:"🏪", name:"コンビニ（近隣）", desc:"24時間営業のコンビニエンスストア", dist:"徒歩約3分", url:"https://www.google.com/maps/search/コンビニ+鶴橋+生野区" },
+          { icon:"🛒", name:"スーパーマーケット", desc:"食品・日用品スーパー", dist:"徒歩約5分", url:"https://www.google.com/maps/search/スーパー+鶴橋+大阪市生野区" },
+        ]},
+        en: { spots:[
+          { icon:"🚉", name:"Tsuruhashi Station", desc:"JR Osaka Loop Line / Kintetsu Osaka, Nara & Yamada Lines", dist:"~5 min walk", url:"https://www.google.com/maps/search/鶴橋駅+大阪" },
+          { icon:"🇰🇷", name:"Tsuruhashi Korea Town", desc:"Osaka's largest Korea Town — Korean food, cosmetics & more", dist:"~5 min walk", url:"https://www.google.com/maps/search/鶴橋コリアタウン+大阪" },
+          { icon:"🏪", name:"Convenience Store (nearby)", desc:"24h convenience store", dist:"~3 min walk", url:"https://www.google.com/maps/search/コンビニ+鶴橋+生野区" },
+          { icon:"🛒", name:"Supermarket", desc:"Grocery & daily goods supermarket", dist:"~5 min walk", url:"https://www.google.com/maps/search/スーパー+鶴橋+大阪市生野区" },
+        ]},
+        ko: { spots:[
+          { icon:"🚉", name:"쓰루하시역", desc:"JR 오사카 순환선 / 긴테쓰 오사카선·나라선·야마다선", dist:"도보 약 5분", url:"https://www.google.com/maps/search/鶴橋駅+大阪" },
+          { icon:"🇰🇷", name:"쓰루하시 코리아타운", desc:"오사카 최대 코리아타운 — 한국 식재료·화장품·맛집", dist:"도보 약 5분", url:"https://www.google.com/maps/search/鶴橋コリアタウン+大阪" },
+          { icon:"🏪", name:"편의점（근처）", desc:"24시간 편의점", dist:"도보 약 3분", url:"https://www.google.com/maps/search/コンビニ+鶴橋+生野区" },
+          { icon:"🛒", name:"슈퍼마켓", desc:"식품·생활용품 슈퍼마켓", dist:"도보 약 5분", url:"https://www.google.com/maps/search/スーパー+鶴橋+大阪市生野区" },
+        ]},
+        zh: { spots:[
+          { icon:"🚉", name:"鹤桥站", desc:"JR大阪环状线 / 近铁大阪线·奈良线·山田线", dist:"步行约5分钟", url:"https://www.google.com/maps/search/鶴橋駅+大阪" },
+          { icon:"🇰🇷", name:"鹤桥韩国城", desc:"大阪最大韩国城 — 韩国食材、化妆品和美食", dist:"步行约5分钟", url:"https://www.google.com/maps/search/鶴橋コリアタウン+大阪" },
+          { icon:"🏪", name:"便利店（附近）", desc:"24小时便利店", dist:"步行约3分钟", url:"https://www.google.com/maps/search/コンビニ+鶴橋+生野区" },
+          { icon:"🛒", name:"超市", desc:"食品·日用品超市", dist:"步行约5分钟", url:"https://www.google.com/maps/search/スーパー+鶴橋+大阪市生野区" },
+        ]},
+      }[lang];
+      return `
+        ${t.spots.map(s=>`
+          <a class="spot-card" href="${s.url}" target="_blank" rel="noopener">
+            <div class="spot-card__icon">${s.icon}</div>
+            <div style="flex:1"><div class="spot-card__name">${s.name}</div><div class="spot-card__desc">${s.desc}</div><div class="spot-card__dist">📏 ${s.dist} &nbsp;↗</div></div>
+          </a>`).join('')}
+      `;
+    },
+  },
+
+  // 7. タバコ
+  {
+    id: "smoking", icon: "🚭", title_key: "s_smoking",
+    render: (lang) => {
+      const t = {
+        ja: {
+          main: "室内は<strong>全面禁煙</strong>です。",
+          allowed: "<strong>3階・4階のバルコニー</strong>のみ喫煙可能です。",
+          rules: [
+            { icon: "🚭", text: "室内での喫煙は<strong>固くお断り</strong>します" },
+            { icon: "✅", text: "喫煙は<strong>3階・4階のバルコニーのみ</strong>可能です" },
+            { icon: "🚯", text: "タバコのゴミは<strong>ポイ捨て厳禁</strong>です。必ずゴミとして処理してください" },
+            { icon: "🏠", text: "家の前での喫煙は<strong>近隣の迷惑</strong>になりますのでお控えください" },
+          ],
+          fine: "指定エリア以外での喫煙が発覚した場合は、<strong>罰金30,000円</strong>が発生します。",
+        },
+        en: {
+          main: "Smoking is <strong>strictly prohibited</strong> inside the property.",
+          allowed: "Smoking is permitted <strong>only on the 3rd and 4th floor balconies</strong>.",
+          rules: [
+            { icon: "🚭", text: "Smoking indoors is <strong>strictly forbidden</strong>" },
+            { icon: "✅", text: "Smoking is allowed <strong>only on the 3rd/4th floor balconies</strong>" },
+            { icon: "🚯", text: "<strong>Do not litter cigarette waste</strong> — dispose of it properly" },
+            { icon: "🏠", text: "Please <strong>avoid smoking in front of the building</strong> to respect the neighbors" },
+          ],
+          fine: "If smoking is detected in any non-designated area, a <strong>¥30,000 penalty</strong> will be charged.",
+        },
+        ko: {
+          main: "실내는 <strong>전면 금연</strong>입니다.",
+          allowed: "<strong>3층·4층 발코니</strong>에서만 흡연이 가능합니다.",
+          rules: [
+            { icon: "🚭", text: "실내 흡연은 <strong>엄격히 금지</strong>되어 있습니다" },
+            { icon: "✅", text: "흡연은 <strong>3층·4층 발코니에서만</strong> 가능합니다" },
+            { icon: "🚯", text: "담배 쓰레기는 <strong>절대 무단 투기 금지</strong>입니다. 반드시 쓰레기통에 버려주세요" },
+            { icon: "🏠", text: "건물 앞에서의 흡연은 <strong>이웃에게 폐가 되므로</strong> 자제해 주세요" },
+          ],
+          fine: "지정 구역 이외에서 흡연이 적발될 경우 <strong>30,000엔의 벌금</strong>이 부과됩니다.",
+        },
+        zh: {
+          main: "室内<strong>全面禁烟</strong>。",
+          allowed: "仅允许在<strong>3楼·4楼的阳台</strong>吸烟。",
+          rules: [
+            { icon: "🚭", text: "<strong>严禁</strong>在室内吸烟" },
+            { icon: "✅", text: "仅允许在<strong>3楼·4楼阳台</strong>吸烟" },
+            { icon: "🚯", text: "<strong>严禁乱丢烟蒂</strong>，请务必妥善处理" },
+            { icon: "🏠", text: "请<strong>避免在建筑物前吸烟</strong>，以免影响邻居" },
+          ],
+          fine: "如发现在指定区域以外的地方吸烟，将收取<strong>30,000日元罚款</strong>。",
+        },
+      }[lang];
+      return `
+        <p>${t.main}</p>
+        <p>${t.allowed}</p>
+        <ul class="rules" style="margin-top:10px">${t.rules.map(r=>`<li><span class="bullet">${r.icon}</span><span>${r.text}</span></li>`).join('')}</ul>
+        <div class="notice notice--warning">⚠️ ${t.fine}</div>
+      `;
+    },
+  },
+
+  // 8. 土足禁止
+  {
+    id: "shoes", icon: "👟", title_key: "s_shoes",
+    render: (lang) => {
+      const t = {
+        ja: { main: "日本の文化として、室内は土足禁止です。", steps: ["玄関で靴を脱いでください","玄関に並べて置いてください","スリッパをご用意しております。ご自由にお使いください"], note: "靴下・スリッパ着用のままお上がりください。" },
+        en: { main: "As per Japanese custom, shoes must be removed before entering.", steps: ["Remove your shoes at the entrance (genkan)","Place them neatly at the entrance","Slippers are provided for your use"], note: "You may wear socks or the provided slippers indoors." },
+        ko: { main: "일본 문화에 따라 실내에서는 신발을 벗어야 합니다.", steps: ["현관에서 신발을 벗어주세요","현관에 가지런히 놓아주세요","슬리퍼가 준비되어 있습니다. 자유롭게 사용해 주세요"], note: "양말 또는 제공된 슬리퍼를 착용하고 들어오세요." },
+        zh: { main: "根据日本文化，室内禁止穿鞋。", steps: ["请在玄关脱鞋","请将鞋子整齐放在玄关处","已为您准备了拖鞋，请随意使用"], note: "室内请穿袜子或提供的拖鞋。" },
+      }[lang];
+      return `
+        <p style="font-weight:700;font-size:15px">${t.main}</p>
+        <ol class="steps">${t.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
+        <div class="notice notice--blue">${t.note}</div>
+      `;
+    },
+  },
+
+  // 9. FAQ
+  {
+    id: "faq", icon: "❓", title_key: "s_faq",
+    render: (lang) => {
+      const t = {
+        ja: { items: [
+          { q:"アメニティは何がありますか？", a:"タオル・歯ブラシは人数分ご用意しています。歯ブラシは簡易なものですので、必要に応じてご持参ください。タオルは1人2枚ずつです。追加のタオルはありませんので、適宜洗濯してご利用ください。\n洗濯用洗剤・食器用洗剤・シャンプー・コンディショナー・ボディウォッシュも用意しています。" },
+          { q:"駐車場はありますか？", a:"専用駐車場はございません。近隣にコインパーキングがあります。" },
+          { q:"ペットは連れて来られますか？", a:"申し訳ございませんが、ペット同伴はお断りしております。" },
+          { q:"設備が壊れていた場合は？", a:"すぐにホストへご連絡ください。できる限り迅速に対応いたします。" },
+          { q:"Wi-Fiが繋がらない場合は？", a:"ルーターを一度電源OFF→ONしてお待ちください。それでも繋がらない場合はホストにご連絡ください。" },
+          { q:"洗濯機はどこにありますか？", a:"洗濯機は1階にあります。洗剤は自動投入ですので追加不要です。乾燥機もご自由にお使いください。" },
+        ]},
+        en: { items: [
+          { q:"What amenities are provided?", a:"Towels and toothbrushes are provided for each guest. The toothbrushes are basic, so feel free to bring your own. Each guest gets 2 towels — no extras, so please use the washer as needed.\nLaundry detergent, dish soap, shampoo, conditioner, and body wash are also provided." },
+          { q:"Is parking available?", a:"No dedicated parking. Coin-operated car parks are available nearby." },
+          { q:"Can I bring pets?", a:"We're sorry, but pets are not allowed." },
+          { q:"What if something is broken?", a:"Please contact the host immediately. We will respond as quickly as possible." },
+          { q:"What if Wi-Fi doesn't work?", a:"Try turning the router off and on again. If it still doesn't work, please contact the host." },
+          { q:"Where is the washing machine?", a:"The washing machine is on the 1st floor. Detergent is automatically dispensed — no need to add any. A dryer is also available." },
+        ]},
+        ko: { items: [
+          { q:"어메니티는 무엇이 있나요?", a:"수건·칫솔은 인원수에 맞게 준비되어 있습니다. 칫솔은 간이용이므로 필요 시 직접 가져오세요. 수건은 1인 2장이며 추가 없으니, 세탁기를 이용해 주세요.\n세탁용 세제·주방세제·샴푸·컨디셔너·바디워시도 준비되어 있습니다." },
+          { q:"주차장이 있나요?", a:"전용 주차장은 없습니다. 근처에 코인 주차장이 있습니다." },
+          { q:"반려동물을 데려올 수 있나요?", a:"죄송하지만 반려동물은 허용되지 않습니다." },
+          { q:"시설이 고장난 경우 어떻게 하나요?", a:"즉시 호스트에게 연락해 주세요. 최대한 빠르게 대응하겠습니다." },
+          { q:"Wi-Fi가 연결되지 않을 때는?", a:"라우터를 껐다가 켜주세요. 그래도 안 되면 호스트에게 연락하세요." },
+          { q:"세탁기는 어디에 있나요?", a:"세탁기는 1층에 있습니다. 세제는 자동 투입되므로 추가로 넣을 필요가 없습니다. 건조기도 자유롭게 이용하세요." },
+        ]},
+        zh: { items: [
+          { q:"提供哪些生活用品？", a:"毛巾和牙刷已按人数准备好。牙刷为简易款，如需要请自带。每人2条毛巾，无额外备用，请适时使用洗衣机清洗。\n已备有洗涤剂、洗碗液、洗发水、护发素和沐浴露。" },
+          { q:"有停车场吗？", a:"没有专用停车场，附近有投币停车场。" },
+          { q:"可以带宠物吗？", a:"非常抱歉，不允许携带宠物。" },
+          { q:"如果设施损坏怎么办？", a:"请立即联系房东，我们会尽快处理。" },
+          { q:"Wi-Fi无法连接怎么办？", a:"请将路由器关闭后重新打开。如仍无法连接，请联系房东。" },
+          { q:"洗衣机在哪里？", a:"洗衣机在1楼。洗涤剂为自动投放，无需另行添加。烘干机也可自由使用。" },
+        ]},
+      }[lang];
+      return `<div>${t.items.map(f=>`<div class="faq-item"><div class="faq-q">${f.q}</div><div class="faq-a">${f.a.replace(/\n/g,'<br>')}</div></div>`).join('')}</div>`;
+    },
+  },
+
+  // 10. 緊急連絡先
+  {
+    id: "emergency", icon: "🆘", title_key: "s_emergency",
+    render: (lang) => {
+      const t = {
+        ja: { contacts: [{ icon:"👤", name:`ホスト（${PROPERTY.host_name}）`, tel:PROPERTY.host_tel, note:"まずこちらにご連絡ください" },{ icon:"🚨", name:"警察", tel:"110", note:"事件・事故の場合" },{ icon:"🚑", name:"救急・消防", tel:"119", note:"病気・ケガ・火事の場合" },{ icon:"🏥", name:"救急安心センター大阪", tel:"#7119", note:"医療機関案内（24時間）" }], addr_label:"物件住所（緊急時にお伝えください）", note:"緊急時は落ち着いて上記番号にご連絡ください。" },
+        en: { contacts: [{ icon:"👤", name:`Host (${PROPERTY.host_name})`, tel:PROPERTY.host_tel, note:"Please contact here first" },{ icon:"🚨", name:"Police", tel:"110", note:"For crime or accidents" },{ icon:"🚑", name:"Ambulance / Fire", tel:"119", note:"For illness, injury, or fire" },{ icon:"🏥", name:"Emergency Medical (Osaka)", tel:"#7119", note:"Hospital guidance 24h" }], addr_label:"Property Address (share in an emergency)", note:"Stay calm and call the numbers above in an emergency." },
+        ko: { contacts: [{ icon:"👤", name:`호스트(${PROPERTY.host_name})`, tel:PROPERTY.host_tel, note:"먼저 이쪽에 연락 주세요" },{ icon:"🚨", name:"경찰", tel:"110", note:"사건·사고의 경우" },{ icon:"🚑", name:"구급·소방", tel:"119", note:"병·부상·화재의 경우" },{ icon:"🏥", name:"응급 안심 센터(오사카)", tel:"#7119", note:"의료기관 안내(24시간)" }], addr_label:"숙소 주소 (긴급 시 전달해 주세요)", note:"긴급 시 침착하게 위 번호에 연락하세요." },
+        zh: { contacts: [{ icon:"👤", name:`房东（${PROPERTY.host_name}）`, tel:PROPERTY.host_tel, note:"请先联系这里" },{ icon:"🚨", name:"警察", tel:"110", note:"发生案件或事故时" },{ icon:"🚑", name:"救护车/消防", tel:"119", note:"生病、受伤或火灾时" },{ icon:"🏥", name:"急救安心中心（大阪）", tel:"#7119", note:"医疗机构咨询（24小时）" }], addr_label:"物业地址（紧急情况时请告知）", note:"紧急情况请冷静拨打上述号码。" },
+      }[lang];
+      return `
+        ${t.contacts.map(c=>`
+          <div class="contact-card">
+            <div class="contact-card__icon">${c.icon}</div>
+            <div><div class="contact-card__name">${c.name}</div><a class="contact-card__tel" href="tel:${c.tel}">${c.tel}</a><div class="contact-card__note">${c.note}</div></div>
+          </div>`).join('')}
+        <div class="notice notice--blue"><div style="font-size:12px;font-weight:700;margin-bottom:4px">📍 ${t.addr_label}</div><div style="font-size:13px">${PROPERTY.address}</div></div>
+        <div class="notice">${t.note}</div>
+      `;
+    },
+  },
+
+  // 11. 宿泊税
+  {
+    id: "tax", icon: "🧾", title_key: "s_tax",
+    render: (lang) => {
+      const t = {
+        ja: { main: "大阪市では、宿泊者1人につき1泊<strong>200円</strong>の宿泊税がかかります。", note: "宿泊税はご予約時のお支払いに含まれています。追加でのご請求はありません。" },
+        en: { main: "Osaka City levies an accommodation tax of <strong>¥200 per person per night</strong>.", note: "The accommodation tax is already included in your booking payment. No additional charge will be made." },
+        ko: { main: "오사카시에서는 1인 1박당 <strong>200엔</strong>의 숙박세가 부과됩니다.", note: "숙박세는 예약 시 결제 금액에 포함되어 있습니다. 추가 청구는 없습니다." },
+        zh: { main: "大阪市对住客征收每人每晚 <strong>200日元</strong>的住宿税。", note: "住宿税已包含在您预订时的付款中，无需额外支付。" },
+      }[lang];
+      return `
+        <div style="text-align:center;padding:16px 0">
+          <div style="font-size:30px;font-weight:700;color:var(--primary-dark)">¥200<span style="font-size:14px;font-weight:400;color:var(--text-muted)"> / person / night</span></div>
+        </div>
+        <p>${t.main}</p>
+        <div class="notice notice--blue">✅ ${t.note}</div>
+      `;
+    },
+  },
+
+]; // END SECTIONS
+
+// ── 表示順序 ─────────────────────────────────────────────────
+const SECTION_ORDER = [
+  'wifi', 'checkin', 'id', 'garbage', 'facilities',
+  'spots', 'smoking',
+  'shoes', 'faq', 'emergency', 'tax'
+];
+function getSortedSections() {
+  return SECTION_ORDER.map(id => SECTIONS.find(s => s.id === id)).filter(Boolean);
+}
+
+// ============================================================
+// ▼▼▼ RENDER ENGINE ▼▼▼
+// ============================================================
+let currentLang = 'en';
+
+// ── Hero ──
+function renderHero() {
+  const hero = document.getElementById('hero-area');
+  const img  = PROPERTY_IMAGES.find(src => src && src.trim());
+  const sub  = I18N[currentLang].header_sub;
+
+  const bgHTML = img
+    ? `<img class="hero__img" src="${img}" alt="${PROPERTY.name}">`
+    : `<div class="hero__placeholder"><div class="hero__placeholder-icon">📷</div><div>PROPERTY_IMAGES に写真を追加してください</div></div>`;
+
+  hero.innerHTML = `
+    ${bgHTML}
+    <div class="hero__overlay"></div>
+    <div class="hero__content">
+      <div class="hero__tag">House Manual</div>
+      <h1 class="hero__title">${PROPERTY.name}</h1>
+      <div class="hero__sub" data-i18n="header_sub">${sub}</div>
+      <div class="hero__welcome" id="hero-welcome">${I18N[currentLang].welcome_msg}</div>
+      <div class="hero__chips">
+        <a class="hero__chip" href="#section-checkin">🟢 IN ${PROPERTY.checkin_time}</a>
+        <a class="hero__chip" href="#section-checkin">🔴 OUT ${PROPERTY.checkout_time}</a>
+        <a class="hero__chip" href="#section-wifi">📶 Wi-Fi</a>
+      </div>
+    </div>
+    <div class="hero__scroll">↓</div>
+  `;
+}
+
+// ── Main ──
+function renderMain() {
+  document.getElementById('main-content').innerHTML =
+    getSortedSections().map((sec, i) => `
+    <div class="section" id="section-${sec.id}" style="transition-delay:${Math.min(i*0.04, 0.3)}s">
+      <div class="section__header">
+        <div class="section__icon">${sec.icon}</div>
+        <div class="section__title">${I18N[currentLang][sec.title_key]}</div>
+      </div>
+      <div class="section__body">${sec.render(currentLang)}</div>
+    </div>
+  `).join('');
+  initScrollAnim();
+  initWifiCopy();
+}
+
+// ── TOC ──
+function renderTOC() {
+  document.getElementById('toc-grid').innerHTML = getSortedSections().map(sec => `
+    <a class="toc__item" href="#section-${sec.id}" onclick="closeTOC()">
+      <span class="icon">${sec.icon}</span>
+      <span>${I18N[currentLang][sec.title_key]}</span>
+    </a>
+  `).join('');
+}
+
+// ── Language switch ──
+function setLang(lang) {
+  currentLang = lang;
+  document.documentElement.lang = lang;
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('onclick') === `setLang('${lang}')`);
+  });
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (I18N[lang][key]) el.textContent = I18N[lang][key];
+  });
+  renderTOC();
+  const hw = document.getElementById('hero-welcome');
+  if (hw) hw.innerHTML = I18N[lang].welcome_msg;
+  getSortedSections().forEach(sec => {
+    const titleEl = document.querySelector(`#section-${sec.id} .section__title`);
+    if (titleEl) titleEl.textContent = I18N[lang][sec.title_key];
+    const bodyEl  = document.querySelector(`#section-${sec.id} .section__body`);
+    if (bodyEl)  bodyEl.innerHTML = sec.render(lang);
+  });
+  initWifiCopy();
+}
+
+// ── Scroll Animation ──
+function initScrollAnim() {
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.07, rootMargin: '0px 0px -32px 0px' });
+  document.querySelectorAll('.section').forEach(el => obs.observe(el));
+}
+
+// ── Sticky Header ──
+function initHeader() {
+  const hdr = document.getElementById('site-header');
+  window.addEventListener('scroll', () => {
+    hdr.classList.toggle('scrolled', window.scrollY > 60);
+  }, { passive: true });
+}
+
+// ── TOC Bottom Sheet ──
+let tocOpen = false;
+function openTOC() {
+  tocOpen = true;
+  document.getElementById('toc-sheet').classList.add('open');
+  document.getElementById('toc-overlay').classList.add('show');
+  document.getElementById('toc-fab').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeTOC() {
+  tocOpen = false;
+  document.getElementById('toc-sheet').classList.remove('open');
+  document.getElementById('toc-overlay').classList.remove('show');
+  document.getElementById('toc-fab').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function initTOC() {
+  document.getElementById('toc-fab').addEventListener('click', () => tocOpen ? closeTOC() : openTOC());
+  document.getElementById('toc-overlay').addEventListener('click', closeTOC);
+}
+
+// ── Wi-Fi Copy Button ──
+function initWifiCopy() {
+  document.querySelectorAll('.wifi-box__copy').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const text = btn.dataset.copy;
+      const lang = currentLang;
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
+        document.body.appendChild(ta); ta.focus(); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+      }
+      const orig = btn.textContent;
+      btn.textContent = I18N[lang].copied;
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = I18N[lang].copy; btn.classList.remove('copied'); }, 2200);
+    });
+  });
+}
+
+// ── Init ──
+renderHero();
+renderMain();
+renderTOC();
+initHeader();
+initTOC();
+</script>
+</body>
+</html>
