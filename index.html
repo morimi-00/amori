@@ -614,6 +614,53 @@
   .toc__item .icon  { font-size: 16px; flex-shrink: 0; }
 
   /* ============================================================
+     TAB NAVIGATION (Airbnb-style)
+     ============================================================ */
+  .tab-nav {
+    position: fixed;
+    top: 52px;
+    left: 0; right: 0;
+    z-index: 150;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid #EBEBEB;
+    transform: translateY(-300%);
+    transition: transform 0.32s cubic-bezier(0.32,0.72,0,1);
+  }
+  .tab-nav.visible { transform: translateY(0); }
+  .tab-nav__inner {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 12px;
+  }
+  .tab-nav__inner::-webkit-scrollbar { display: none; }
+  .tab-nav__btn {
+    white-space: nowrap;
+    padding: 14px 14px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    font-family: var(--font);
+    transition: color 0.15s, border-color 0.15s;
+    bottom: -1px;
+    flex-shrink: 0;
+  }
+  .tab-nav__btn:hover { color: #222; }
+  .tab-nav__btn.active { color: #222; border-bottom-color: #222; }
+
+  /* Scroll offset so tab nav doesn't cover sections */
+  :root { --scroll-offset: 108px; }
+  .section { scroll-margin-top: var(--scroll-offset); }
+
+  /* ============================================================
      FOOTER
      ============================================================ */
   .footer {
@@ -639,6 +686,11 @@
     </div>
   </div>
 </header>
+
+<!-- ── Tab Nav ── -->
+<nav class="tab-nav" id="tab-nav">
+  <div class="tab-nav__inner" id="tab-nav-inner"></div>
+</nav>
 
 <!-- ── Hero ── -->
 <section class="hero" id="hero-area"></section>
@@ -700,6 +752,8 @@ const I18N = {
     s_shoes: "土足禁止", s_id: "身分証明書",
     s_tax: "宿泊税", s_emergency: "緊急連絡先",
     s_spots: "近隣スポット", s_faq: "よくある質問",
+    tab_checkin:"チェックイン", tab_garbage:"ゴミ捨て", tab_facilities:"設備",
+    tab_rules:"ルール", tab_area:"近隣", tab_qa:"Q&A", tab_emergency:"緊急連絡先",
     copy: "コピー", copied: "✓ コピー済",
   },
   en: {
@@ -711,6 +765,8 @@ const I18N = {
     s_shoes: "No Shoes Indoors", s_id: "ID Verification",
     s_tax: "Accommodation Tax", s_emergency: "Emergency Contacts",
     s_spots: "Nearby Spots", s_faq: "FAQ",
+    tab_checkin:"Check-in", tab_garbage:"Garbage", tab_facilities:"Facilities",
+    tab_rules:"Rules", tab_area:"Area", tab_qa:"Q&A", tab_emergency:"Emergency",
     copy: "Copy", copied: "✓ Copied",
   },
   ko: {
@@ -722,6 +778,8 @@ const I18N = {
     s_shoes: "실내 신발 금지", s_id: "신분증 확인",
     s_tax: "숙박세", s_emergency: "긴급 연락처",
     s_spots: "주변 추천 장소", s_faq: "자주 묻는 질문",
+    tab_checkin:"체크인", tab_garbage:"쓰레기", tab_facilities:"시설",
+    tab_rules:"규칙", tab_area:"주변", tab_qa:"Q&A", tab_emergency:"긴급연락처",
     copy: "복사", copied: "✓ 복사됨",
   },
   zh: {
@@ -733,6 +791,8 @@ const I18N = {
     s_shoes: "禁止穿鞋入内", s_id: "身份证明",
     s_tax: "住宿税", s_emergency: "紧急联系方式",
     s_spots: "周边推荐景点", s_faq: "常见问题",
+    tab_checkin:"入住", tab_garbage:"垃圾", tab_facilities:"设施",
+    tab_rules:"规则", tab_area:"周边", tab_qa:"Q&A", tab_emergency:"紧急联系",
     copy: "复制", copied: "✓ 已复制",
   },
 };
@@ -1200,12 +1260,22 @@ const SECTIONS = [
 // ── 表示順序 ─────────────────────────────────────────────────
 const SECTION_ORDER = [
   'wifi', 'checkin', 'id', 'garbage', 'facilities',
-  'spots', 'smoking',
-  'shoes', 'faq', 'emergency', 'tax'
+  'smoking', 'shoes', 'spots', 'faq', 'tax', 'emergency'
 ];
 function getSortedSections() {
   return SECTION_ORDER.map(id => SECTIONS.find(s => s.id === id)).filter(Boolean);
 }
+
+// ── タブグループ定義 ──────────────────────────────────────────
+const TAB_GROUPS = [
+  { id: 'checkin',    sections: ['wifi','checkin','id'],    label_key: 'tab_checkin' },
+  { id: 'garbage',    sections: ['garbage'],                label_key: 'tab_garbage' },
+  { id: 'facilities', sections: ['facilities'],             label_key: 'tab_facilities' },
+  { id: 'rules',      sections: ['smoking','shoes'],        label_key: 'tab_rules' },
+  { id: 'area',       sections: ['spots'],                  label_key: 'tab_area' },
+  { id: 'qa',         sections: ['faq','tax'],              label_key: 'tab_qa' },
+  { id: 'emergency',  sections: ['emergency'],              label_key: 'tab_emergency' },
+];
 
 // ============================================================
 // ▼▼▼ RENDER ENGINE ▼▼▼
@@ -1216,7 +1286,6 @@ let currentLang = 'en';
 function renderHero() {
   const hero = document.getElementById('hero-area');
   const img  = PROPERTY_IMAGES.find(src => src && src.trim());
-  const sub  = I18N[currentLang].header_sub;
 
   const bgHTML = img
     ? `<img class="hero__img" src="${img}" alt="${PROPERTY.name}">`
@@ -1226,14 +1295,13 @@ function renderHero() {
     ${bgHTML}
     <div class="hero__overlay"></div>
     <div class="hero__content">
-      <div class="hero__tag">House Manual</div>
+      <div class="hero__tag">HOUSE MANUAL</div>
       <h1 class="hero__title">${PROPERTY.name}</h1>
-      <div class="hero__sub" data-i18n="header_sub">${sub}</div>
       <div class="hero__welcome" id="hero-welcome">${I18N[currentLang].welcome_msg}</div>
       <div class="hero__chips">
-        <a class="hero__chip" href="#section-checkin">🟢 IN ${PROPERTY.checkin_time}</a>
-        <a class="hero__chip" href="#section-checkin">🔴 OUT ${PROPERTY.checkout_time}</a>
-        <a class="hero__chip" href="#section-wifi">📶 Wi-Fi</a>
+        <a class="hero__chip" href="#section-checkin">IN ${PROPERTY.checkin_time}</a>
+        <a class="hero__chip" href="#section-checkin">OUT ${PROPERTY.checkout_time}</a>
+        <a class="hero__chip" href="#section-wifi">Wi-Fi</a>
       </div>
     </div>
     <div class="hero__scroll">↓</div>
@@ -1266,6 +1334,63 @@ function renderTOC() {
   `).join('');
 }
 
+// ── Tab Nav ──
+function renderTabNav() {
+  document.getElementById('tab-nav-inner').innerHTML = TAB_GROUPS.map(g => `
+    <button class="tab-nav__btn" id="taббtn-${g.id}" onclick="scrollToTabGroup('${g.id}')">${I18N[currentLang][g.label_key]}</button>
+  `).join('');
+  setActiveTab(TAB_GROUPS[0].id);
+}
+
+function scrollToTabGroup(groupId) {
+  const group = TAB_GROUPS.find(g => g.id === groupId);
+  if (!group) return;
+  const el = document.getElementById('section-' + group.sections[0]);
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function setActiveTab(groupId) {
+  document.querySelectorAll('.tab-nav__btn').forEach(btn => btn.classList.remove('active'));
+  const btn = document.getElementById('taббtn-' + groupId);
+  if (btn) {
+    btn.classList.add('active');
+    btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
+}
+
+function initTabNav() {
+  const tabNav = document.getElementById('tab-nav');
+
+  function updateTabNavTop() {
+    const hdrH = document.getElementById('site-header').getBoundingClientRect().height;
+    tabNav.style.top = hdrH + 'px';
+    const tabH = tabNav.getBoundingClientRect().height || 50;
+    document.documentElement.style.setProperty('--scroll-offset', (hdrH + tabH + 8) + 'px');
+  }
+  updateTabNavTop();
+  window.addEventListener('resize', updateTabNavTop);
+
+  const heroObs = new IntersectionObserver(entries => {
+    const visible = !entries[0].isIntersecting;
+    tabNav.classList.toggle('visible', visible);
+    if (visible) updateTabNavTop();
+  }, { threshold: 0 });
+  heroObs.observe(document.getElementById('hero-area'));
+
+  const secObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const secId = e.target.id.replace('section-', '');
+        const group = TAB_GROUPS.find(g => g.sections.includes(secId));
+        if (group) setActiveTab(group.id);
+      }
+    });
+  }, { threshold: 0.05, rootMargin: '-52px 0px -40% 0px' });
+  document.querySelectorAll('.section').forEach(el => secObs.observe(el));
+}
+
 // ── Language switch ──
 function setLang(lang) {
   currentLang = lang;
@@ -1278,6 +1403,7 @@ function setLang(lang) {
     if (I18N[lang][key]) el.textContent = I18N[lang][key];
   });
   renderTOC();
+  renderTabNav();
   const hw = document.getElementById('hero-welcome');
   if (hw) hw.innerHTML = I18N[lang].welcome_msg;
   getSortedSections().forEach(sec => {
@@ -1357,8 +1483,10 @@ function initWifiCopy() {
 renderHero();
 renderMain();
 renderTOC();
+renderTabNav();
 initHeader();
 initTOC();
+initTabNav();
 </script>
 </body>
 </html>
